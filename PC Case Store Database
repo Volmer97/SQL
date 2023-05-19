@@ -1,0 +1,28 @@
+--Create a store database
+
+CREATE TABLE pcs (id INTEGER PRIMARY KEY, brand TEXT, price INTEGER, rating INTEGER);
+
+INSERT INTO pcs VALUES (1, "hyte", 15, 5);
+INSERT INTO pcs VALUES (2, "fd", 25, 3);
+INSERT INTO pcs VALUES (3, "desk", 45, 5);
+INSERT INTO pcs VALUES (4, "air", 55, 2);
+INSERT INTO pcs VALUES (5, "cup", 125, 5);
+
+-- Display the store database ordered by price.
+SELECT *
+FROM pcs
+ORDER BY price DESC;
+
+-- What is the average price for a pc case to sell for?
+SELECT AVG(price)
+FROM pcs;
+
+-- What brand sells the most expensive PC case?
+SELECT brand, MAX(price)
+FROM pcs
+
+-- WHich cases have a 5 star rating and are also $60 or less? Order from most to least expensive.
+SELECT *
+FROM pcs
+WHERE price <=60 AND rating = 5
+ORDER BY price desc;
