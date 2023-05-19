@@ -21,7 +21,7 @@ FROM pcs;
 SELECT brand, MAX(price)
 FROM pcs
 
--- WHich cases have a 5 star rating and are also $60 or less? Order from most to least expensive.
+-- Which cases have a 5 star rating and are also $60 or less? Order from most to least expensive.
 SELECT *
 FROM pcs
 WHERE price <=60 AND rating = 5
