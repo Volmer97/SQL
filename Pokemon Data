@@ -1,0 +1,59 @@
+# For this project I am using Pokemon data from a table created by GitHub user "pamelafox"
+# I will be answering various questions about the data in this SQL code.
+
+
+# Find the Pokemon with attack over 90 and defense less than 60. Exclude legendaries
+SELECT Name, Attack, Defense
+FROM pokemon
+WHERE attack > 90 AND Defense <60 AND Legendary = "False"
+ORDER BY Attack DESC;
+
+# Which Pokemon have the best defense? Only show the top 10.
+SELECT Name, Defense
+FROM pokemon
+ORDER BY Defense DESC
+LIMIT 10;
+
+# How many fire types are in genrations 4-6?
+SELECT COUNT(Type_1) AS fire_type_count, 
+Generation
+FROM pokemon
+WHERE Type_1 = "Fire"
+GROUP BY Generation
+HAVING Generation > 3;
+
+# What is the minimum and maximium hp, attack, defense and speed for pokemon?
+SELECT MAX(HP) AS max_hp,
+MIN(HP) AS min_hp,
+MAX(Defense) AS max_defense, 
+MIN(Defense) AS min_defense, 
+MAX(Attack) AS max_attack, 
+MIN(Attack) AS min_attack, 
+MAX(Speed) AS max_speed, 
+MIN(Speed) AS min_speed
+FROM pokemon;
+
+# Create a new column for pokemon to describe the speed of pokemon using text.
+SELECT Name,
+CASE WHEN Speed > 135 THEN "Very fast"
+WHEN Speed > 90 THEN "Fast"
+WHEN Speed > 45 THEN "Average"
+ELSE "Slow"
+END "speed_rating"
+FROM pokemon
+ORDER BY speed_rating
+LIMIT 100;
+
+# How many pokemon are there in each speed rating?
+SELECT speed_rating, COUNT(*) AS count_speed_rating
+FROM (
+SELECT
+CASE
+WHEN Speed > 135 THEN "Very fast"
+WHEN Speed > 90 THEN "Fast"
+WHEN Speed > 45 THEN "Average"
+ELSE "Slow"
+END AS "speed_rating"
+FROM pokemon
+)
+GROUP BY speed_rating;
