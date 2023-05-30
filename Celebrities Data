@@ -1,0 +1,102 @@
+#I have created 3 tables with different types of data about celebrities to provide examples using JOINs.
+
+#Creating the tables
+#The first table contains general data about the celebrities.
+
+CREATE TABLE celebrities (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT,
+occupation TEXT,
+age INTEGER,
+birthdate TEXT,
+hometown TEXT);
+
+INSERT INTO celebrities (name, occupation, age, birthdate, hometown) VALUES ("Beyonce", "music", 41, "09-4-1981", "Houston");
+INSERT INTO celebrities (name, occupation, age, birthdate, hometown) VALUES ("Dwayne 'The Rock' Johnson", "actor", 51, "05-2-1971", "Hayward");
+INSERT INTO celebrities (name, occupation, age, birthdate, hometown) VALUES ("Jennifer Lawrence", "actor", 32, "08-15-1981", "Indian Hills");
+INSERT INTO celebrities (name, occupation, age, birthdate, hometown) VALUES ("Leonardo DiCaprio", "actor", 48, "11-11-1974", "Los Angeles");
+INSERT INTO celebrities (name, occupation, age, birthdate, hometown) VALUES ("Taylor Swift", "music", 33, "12-13-1989", "Redding");
+
+#The movies table contains information about popular movies that the celebrities starred in.
+
+CREATE TABLE movies (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+celebrity_id INTEGER,
+movie TEXT,
+name TEXT,
+genre TEXT,
+release_year INTEGER);
+
+INSERT INTO movies (celebrity_id, movie, name, genre, release_year) VALUES(4, "Titanic", "Leonardo DiCaprio", "Drama", 1997);
+INSERT INTO movies (celebrity_id, movie, name, genre, release_year) VALUES(2, "Jumanji", "Dwayne 'The Rock' Johnson", "Adventure", 2019);
+INSERT INTO movies (celebrity_id, movie, name, genre, release_year) VALUES(3, "The Hunger Games", "Jennifer Lawrence", "Action", 2012);
+INSERT INTO movies (celebrity_id, movie, name, genre, release_year) VALUES(3, "American Hustle", "Jennifer Lawrence", "Thriller", 2013);
+INSERT INTO movies (celebrity_id, movie, name, genre, release_year) VALUES(4, "The Great Gatsby", "Leonardo DiCaprio", "Drama", 2013);
+
+#The albums table contains information about celebrity albums.
+
+CREATE TABLE albums (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+celebrity_id INTEGER,
+name TEXT,
+album TEXT,
+music_genre TEXT,
+release_year INTEGER);
+
+INSERT INTO albums(celebrity_id, name, album, music_genre, release_year) VALUES(1, "Beyonce", "Epic", "Pop", 2013);
+INSERT INTO albums(celebrity_id, name, album, music_genre, release_year) VALUES(1, "Beyonce", "Lemonade", "R&B", 2016);
+INSERT INTO albums(celebrity_id, name, album, music_genre, release_year) VALUES(5, "Taylor Swift", "Midnights", "Country", 2022);
+INSERT INTO albums(celebrity_id, name, album, music_genre, release_year) VALUES(5, "Taylor Swift", "Folklore", "Country", 2020);
+INSERT INTO albums(celebrity_id, name, album, music_genre, release_year) VALUES(5, "Taylor Swift", "Reputation", "Country", 2017);
+
+#Now I will answer some questions about the data.
+#1. Show only celebrities who are actors and the movies they have been in, as well as the realease year of the movie.
+SELECT c.name,
+m.movie,
+m.release_year
+FROM celebrities c
+JOIN movies m
+ON c.id = m.celebrity_id;
+
+#2. Are there any actors that starred in a movie released in the 1990s that is also from Los Angeles, CA?
+SELECT c.name,
+c.hometown,
+m.movie,
+m.release_year
+FROM celebrities c
+JOIN movies m
+ON c.id = m.celebrity_id
+WHERE hometown = "Los Angeles" AND
+m.release_year >= 1990 AND
+m.release_year < 2000;
+
+#3. Create one table including ALL celebrities that includes all the projects they have completed.
+SELECT c.name,
+m.movie,
+a.album
+FROM celebrities c
+LEFT JOIN movies m
+ON c.id = m.celebrity_id
+LEFT JOIN albums a
+ON c.id = a.celebrity_id;
+
+#4. Which celebrity has the most albums? 
+SELECT c.name,
+COUNT(a.album) AS total_albums
+FROM celebrities c
+JOIN albums a
+ON c.id = a.celebrity_id
+GROUP BY c.name
+ORDER BY total_albums DESC;
+
+#5. Which celebrity musician would be a good fit for a cameo in an upcoming movie? Find someone that is younger than 35, has at least 3 albums and has been in the industry for more than 5 years?
+SELECT c.name,
+c.age,
+COUNT(a.album) AS total_albums,
+MIN(a.release_year) AS earliest_project
+FROM celebrities c
+JOIN albums a
+ON c.id = a.celebrity_id
+WHERE c.age < 35 AND a.album >= 3
+GROUP BY c.name
+ORDER BY c.age;
