@@ -1,0 +1,93 @@
+# For this project, I downloaded Spotify data from Kaggle.
+# Then I created a table to insert Spotify data into.
+# Finally, I performed analytics on the data using SQL. 
+
+#Creating the table
+CREATE TABLE BIT_DB.Spotifydata (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+song_key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+song_mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness decimal(8,7) NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL )
+
+#Then I inserted the Spotify Data .csv into the table.
+#Next, I explored the data using the following SQL. 
+
+#Finding the average tempo.
+SELECT AVG(tempo)
+FROM BIT_DB.Spotifydata
+
+#Finding out what 3 tracks are the most popular and who they're by.
+SELECT track_name, popularity, artist_name
+FROM BIT_DB.Spotifydata
+ORDER BY popularity DESC
+LIMIT 3;
+
+#How long is the most popular song and what is the energy of that song? Convert from milliseconds to minutes and seconds.
+SELECT CAST(duration_ms / 60000 AS INTEGER) || ':' ||
+    CASE
+        WHEN (duration_ms / 1000) % 60 < 10 THEN '0' || CAST((duration_ms / 1000) % 60 AS INTEGER)
+        ELSE CAST((duration_ms / 1000) % 60 AS INTEGER)
+    END AS minutes_seconds,
+popularity, 
+track_name, 
+energy
+FROM BIT_DB.Spotifydata
+ORDER BY popularity DESC
+LIMIT 1;
+
+#Next I want to create a new column to label the danceability and convert it to something that is easier and quicker to read.
+#First, I need to find out the minimum and maximum danceability.
+SELECT MIN(danceability),
+MAX(danceability)
+FROM BIT_DB.Spotifydata;
+
+#Then I create the new column to label the danceability from "low" to "very high". 
+SELECT CASE
+    WHEN(danceability) < 0.25 THEN 'low'
+     WHEN(danceability) < 0.50 THEN 'average'
+      WHEN(danceability) < 0.75 THEN 'high'
+      ELSE 'very high' 
+      END AS danceability_2
+FROM BIT_DB.Spotifydata
+ORDER BY danceability_2 DESC;
+
+#Now I can explore which songs have a popularity above 85 with a dancability of "very high"?
+SELECT popularity, track_name,
+ CASE
+    WHEN(danceability) < 0.25 THEN 'low'
+     WHEN(danceability) < 0.50 THEN 'average'
+      WHEN(danceability) < 0.75 THEN 'high'
+      ELSE 'very high' 
+      END AS danceability_2
+FROM BIT_DB.Spotifydata
+WHERE popularity > 85
+AND danceability_2 = 'very high'
+ORDER BY popularity DESC;
+
+#Finding out which artist has the most tracks with a danceability of "high" or greater?
+SELECT artist_name, COUNT(track_name) AS tracks, 
+ CASE
+    WHEN(danceability) < 0.25 THEN 'low'
+     WHEN(danceability) < 0.50 THEN 'average'
+      WHEN(danceability) < 0.75 THEN 'high'
+      ELSE 'very high' 
+      END AS danceability_2
+FROM BIT_DB.Spotifydata
+WHERE danceability_2 >= 'high'
+GROUP BY artist_name
+ORDER BY tracks DESC
+LIMIT 1;
